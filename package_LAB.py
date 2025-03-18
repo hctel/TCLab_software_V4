@@ -18,7 +18,7 @@ def LL_RT(MV,Kp,Tlead,Tlag,Ts,PV,PVInit=0,method='EBD'):
     :method: discretisation method (optional: default value is 'EBD')
         EBD: Euler Backward difference
         EFD: Euler Forward difference
-        TRAP: Trapezoïdal method
+        TRAP: Trapezoïdal method (Not implemented yet)
     
     The function "LL_RT" appends a value to the output vector "PV".
     The appended value is obtained from a recurrent equation that depends on the discretisation method.
