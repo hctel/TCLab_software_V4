@@ -92,11 +92,25 @@ def PID_RT():
     
     :MVMin: minimum value for MV (used for saturation and anti wind-up) 
     :MVMax: maximum value for MV (used for saturation and anti wind-up) 
-    
-    :MV: MV (or Manipulated Value) vector :MVP: MVP (or Propotional part of MV) vector :MVI: MVI (or Integral part of MV) vector :MVD: MVD (or Derivative part of MV) vector :E: E (or control Error) vector 
-    :ManFF: Activated FF in manual mode (optional: default boolean value is False) :PVInit: Initial value for PV (optional: default value is 0): used if PID_RT is ran first in the squence and no value of PV is available yet. 
-    :method: discretisation method (optional: default value is 'EBD') EBD-E8D: EBD for integral action and EBD for derivative action EBD-TRAP: EBD for integral action and TRAP for derivative action TRAP-EBD: TRAP for integral action and EBD for derivative action TRAP-TRAP: TRAP for integral action and TRAP for derivative action 
-    The function "PID_RT" appends new values to the vectors "MV", "MVP", "MVI", and "MVD". The appended values are based on the PID algorithm, the controller mode, and feedforward. Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
+
+    :MV: MV (or Manipulated Value) vector 
+    :MVP: MVP (or Propotional part of MV) vector 
+    :MVI: MVI (or Integral part of MV) vector 
+    :MVD: MVD (or Derivative part of MV) vector 
+    :E: E (or control Error) vector 
+
+    :ManFF: Activated FF in manual mode (optional: default boolean value is False) 
+    :PVInit: Initial value for PV (optional: default value is 0): used if PID_RT is ran first in the squence and no value of PV is available yet. 
+
+    :method: discretisation method (optional: default value is 'EBD')
+        EBD-EBD: EBD for integral action and EBD for derivative action
+        EBD-TRAP: EBD for integral action and TRAP for derivative action
+        TRAP-EBD: TRAP for integral action and EBD for derivative action
+        TRAP-TRAP: TRAP for integral action and TRAP for derivative action
+
+    The function "PID_RT" appends new values to the vectors "MV", "MVP", "MVI", and "MVD".
+    The appended values are based on the PID algorithm, the controller mode, and feedforward.
+    Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
     """
 
     pass
