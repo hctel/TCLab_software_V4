@@ -63,7 +63,7 @@ def LL(MV,Kp,Tlead, Tlag,Ts,MVInit=0,PVInit=0,method='EBD'):
     
     MVDelay = []
     MVTemp = []
-    PVSim = []    
+    PVSim = []
     
     for i in range(0,len(MV)):
         MVTemp.append(MV[i])
@@ -74,6 +74,31 @@ def LL(MV,Kp,Tlead, Tlag,Ts,MVInit=0,PVInit=0,method='EBD'):
 #-----------------------------------
 
 def PID_RT():
+
+    """
+    PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MVP, MVI, MVD, E, ManFF=False, PVInit=0, method='EBD-EBD')
+    The function "PID_RT" needs to be included in a -for or while loop".
+
+    :SP: SP (or SetPoint) vector
+    :PV: PV (or Process Value) vector 
+    :Man: Man (or Manual controller mode) vector (True or False) 
+    :MVMan: MVMan (or Manual value for MV) vector :MVFF: MVFF (or Feedforward) vector 
+
+    :Kc: controller gain 
+    :Ti: integral time constant [s] 
+    :Td: derivative time constant [s] 
+    :alpha: Tfd alpheTd where Tfd is the derivative filter time constant [s] 
+    :Ts: sampling period [s]
+    
+    :MVMin: minimum value for MV (used for saturation and anti wind-up) 
+    :MVMax: maximum value for MV (used for saturation and anti wind-up) 
+    
+    :MV: MV (or Manipulated Value) vector :MVP: MVP (or Propotional part of MV) vector :MVI: MVI (or Integral part of MV) vector :MVD: MVD (or Derivative part of MV) vector :E: E (or control Error) vector 
+    :ManFF: Activated FF in manual mode (optional: default boolean value is False) :PVInit: Initial value for PV (optional: default value is 0): used if PID_RT is ran first in the squence and no value of PV is available yet. 
+    :method: discretisation method (optional: default value is 'EBD') EBD-E8D: EBD for integral action and EBD for derivative action EBD-TRAP: EBD for integral action and TRAP for derivative action TRAP-EBD: TRAP for integral action and EBD for derivative action TRAP-TRAP: TRAP for integral action and TRAP for derivative action 
+    The function "PID_RT" appends new values to the vectors "MV", "MVP", "MVI", and "MVD". The appended values are based on the PID algorithm, the controller mode, and feedforward. Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
+    """
+
     pass
 
 def IMC():
