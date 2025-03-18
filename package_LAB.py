@@ -146,7 +146,12 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
             MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1]
         else:
             MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1] - MVFF[-1]
+
+    MV.append(MVP[-1] + MVI[-1] + MVD[-1] + MVFF[-1])
     
+    # Saturation # à vérifier
+    MV[-1] = max(MVMin, min(MVMax, MV[-1]))
+
     '''
     # Input-output dynamics P(s)
     Delay_RT(MV,thetap,Ts,MVDelayp,MV0)
