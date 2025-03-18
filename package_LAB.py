@@ -73,21 +73,21 @@ def LL(MV,Kp,Tlead, Tlag,Ts,MVInit=0,PVInit=0,method='EBD'):
 
 #-----------------------------------
 
-def PID_RT():
+def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MVP, MVI, MVD, E, ManFF=False, PVInit=0, method='EBD-EBD'):
 
     """
-    PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MVP, MVI, MVD, E, ManFF=False, PVInit=0, method='EBD-EBD')
     The function "PID_RT" needs to be included in a -for or while loop".
 
     :SP: SP (or SetPoint) vector
     :PV: PV (or Process Value) vector 
     :Man: Man (or Manual controller mode) vector (True or False) 
-    :MVMan: MVMan (or Manual value for MV) vector :MVFF: MVFF (or Feedforward) vector 
+    :MVMan: MVMan (or Manual value for MV) vector 
+    :MVFF: MVFF (or Feedforward) vector 
 
     :Kc: controller gain 
     :Ti: integral time constant [s] 
     :Td: derivative time constant [s] 
-    :alpha: Tfd alpheTd where Tfd is the derivative filter time constant [s] 
+    :alpha: Tfd = alpha*Td where Tfd is the derivative filter time constant [s] 
     :Ts: sampling period [s]
     
     :MVMin: minimum value for MV (used for saturation and anti wind-up) 
@@ -113,7 +113,53 @@ def PID_RT():
     Note that saturation of "MV" within the limits [MVMin MVMax] is implemented with anti wind-up. 
     """
 
-    pass
+    if len(PV) == 0:
+        E.append(SP[-1] - PVInit)
+    else:
+        E.append(SP[-1] - PV[-1]) 
+
+    # Proportional action
+    MVP.append(Kc*E[-1]) # à vérifier
+
+    # Integral action
+    if len(MVI) == 0:
+        MVI.append((Kc*Ts/Ti)*E[-1]) # initialisation always with EBD
+    else:
+        if method == 'TRAP':
+            MVI.append(MVI[-1] + (0.5*Kc*Ts/Ti)*(E[-1]+E[-2]))
+        else:
+            MVI.append(MVI[-1] + (Kc*Ts/Ti)*E[-1])
+
+    # Derivative action # à vérifier
+    Tfd = alpha*Td
+    if len(MVD) == 0:
+        MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2]))
+    else:
+        if method == 'TRAP':
+            pass # TO DO
+        else:
+            MVD.append((Tfd/(Tfd+Ts))*MVD[-1] + ((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2]))
+
+    # Manual mode + anti wind-up 
+    if Man[-1] == True:
+        if ManFF:
+            MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1]
+        else:
+            MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1] - MVFF[-1]
+    
+    '''
+    # Input-output dynamics P(s)
+    Delay_RT(MV,thetap,Ts,MVDelayp,MV0)
+    FO_RT(MVDelayp,Kp,T1p,Ts,PV1p,0)
+    FO_RT(PV1p,1,T2p,Ts,PV2p,0) 
+
+    # Disturb  ce dynamics D(s)
+    Delay_RT(DV - DV0*np.ones_like(DV),thetad,Ts,MVDelayd,0)
+    FO_RT(MVDelayd,Kd,T1d,Ts,PV1d,0)
+    FO_RT(PV1d,1,T2d,Ts,PV2d,0)
+
+    PV.append(PV2p[-1] + PV2d[-1] + pV0-Kp*MV0)'
+    '''
 
 def IMC():
     #TODO: Implement
