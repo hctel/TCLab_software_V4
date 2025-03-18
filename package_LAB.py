@@ -136,7 +136,7 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
         MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2]))
     else:
         if method == 'TRAP':
-            pass # TO DO
+            MVD.append(((Tfd-Ts*0.5)/(Tfd+Ts*0.5))*MVD[-1] + ((Kc*Td)/(Tfd+Ts*0.5))*(E[-1]-E[-2]))
         else:
             MVD.append((Tfd/(Tfd+Ts))*MVD[-1] + ((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2]))
 
