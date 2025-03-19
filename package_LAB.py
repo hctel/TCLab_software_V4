@@ -149,7 +149,7 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
 
     MV.append(MVP[-1] + MVI[-1] + MVD[-1] + MVFF[-1])
     
-    # Saturation # à vérifier
+    # Saturation # à vérifier (peut-etre pas nécessaire)
     MV[-1] = max(MVMin, min(MVMax, MV[-1]))
 
     '''
