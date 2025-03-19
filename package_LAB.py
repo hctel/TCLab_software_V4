@@ -133,7 +133,7 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
     # Derivative action # à vérifier
     Tfd = alpha*Td
     if len(MVD) == 0:
-        MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2]))
+        MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2])) # problem E[-2] n'existe pas
     else:
         if method == 'TRAP':
             MVD.append(((Tfd-Ts*0.5)/(Tfd+Ts*0.5))*MVD[-1] + ((Kc*Td)/(Tfd+Ts*0.5))*(E[-1]-E[-2]))
