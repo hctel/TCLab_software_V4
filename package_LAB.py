@@ -237,8 +237,8 @@ def margins(P, C, omega):
         C_results = np.multiply(CGain, C_results)
         return C_results
 
-    P_results = P_func(P)
-    C_results = C_func(C)
+    P_results = P_func(P, s)
+    C_results = C_func(C, s)
     L_results = np.multiply(P_results, C_results)
     
     omega_c, index = find_nearest(np.absolute(L_results), 1)
