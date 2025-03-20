@@ -184,7 +184,7 @@ def IMC(Kp, T1, T2, theta, gamma, order="FOPDT"):
     :T1: First time constant [s]
     :T2: Second time constant [s] (Useful only if order="SOPDT")
     :theta: delay [s]
-    :gamma: Regulator agressivity (]0-1[, the smaller the more aggressive)
+    :gamma: Regulator agressivity ([0.2-0.9], the smaller the more aggressive)
     :order: order of the model (optional: default value is 'FOPDT')
         FOPDT: First Order Plus Dead Time
         SOPDT: Second Order Plus Dead Time
@@ -205,3 +205,16 @@ def IMC(Kp, T1, T2, theta, gamma, order="FOPDT"):
         Ti = T1+(theta/2)
         Td = (T1*theta)/(2*T1+theta)
     return Kc, Ti, Td
+
+
+class Controller:
+    def __init(self, parameters):
+        
+        self.parameters = parameters
+        self.parameters['Kp'] = parameters['Kp'] if 'Kp' in parameters else 1.0
+        self.parameters['Ti'] = parameters['Ti'] if 'Ti' in parameters else 0.0
+        self.parameters['Td'] = parameters['Td'] if 'Td' in parameters else 0.0
+        self.parameters['alpha'] = parameters['alpha'] if 'alpha' in parameters else 0.2
+
+def margins(P, C, omega):
+    pass
