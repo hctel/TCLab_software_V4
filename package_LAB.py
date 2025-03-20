@@ -208,8 +208,7 @@ def IMC(Kp, T1, T2, theta, gamma, order="FOPDT"):
 
 
 class Controller:
-    def __init(self, parameters):
-        
+    def __init__(self, parameters):
         self.parameters = parameters
         self.parameters['Kp'] = parameters['Kp'] if 'Kp' in parameters else 1.0
         self.parameters['Ti'] = parameters['Ti'] if 'Ti' in parameters else 0.0
@@ -217,4 +216,34 @@ class Controller:
         self.parameters['alpha'] = parameters['alpha'] if 'alpha' in parameters else 0.2
 
 def margins(P, C, omega):
+    s = 1j*omega
+
+    def find_nearest(array, value): # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+        #peut-etre ajouter abs() quelque part pour correspondre à la slide 69
+        array = np.asarray(array)
+        index = (np.abs(array - value)).argmin()
+        result = array[index]
+        return result, index
+
+    def P_func(P, s):
+        pass
+
+    def C_func(C, s): # PID -> MV = Kc * ( 1 + 1/(Ti*s) + (Td*s)/(alpha*Td*s + 1) ) * E
+        CGain = C.parameters['Kc']
+        CIntegral = 1 / C.parameters['Ti'] * s
+        CDerivative = C.parameters['Td'] * s / (C.parameters['Tfd'] * s + 1)
+    
+        C_results = np.add(1, CIntegral, CDerivative)
+        C_results = np.multiply(CGain, C_results)
+        return C_results
+
+    P_results = P_func(P)
+    C_results = C_func(C)
+    L_results = np.multiply(P_results, C_results)
+    
+    omega_c, index = find_nearest(np.absolute(L_results), 1)
+    print(f"omega_c {omega_c} found at index {index}")
+
+    omega_u, index = find_nearest(np.angle(L_results), 1)
+    print(f"omega_u {omega_u} found at index {index}")
     pass
