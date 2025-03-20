@@ -148,6 +148,8 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
         else:
             MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1] - MVFF[-1]
 
+##   Anti wind-up debug: Was implemented for a PI instead of a PID+FF, MVI did not decrease after MVFF > 0
+
     if (MVP[-1] + MVI[-1] + MVD[-1] + MVFF[-1]) > MVMax:
         MVI[-1] = MVMax - MVP[-1] - MVD[-1] - MVFF[-1]
     if (MVP[-1] + MVI[-1] + MVD[-1] + MVFF[-1]) < MVMin:
@@ -175,6 +177,31 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
     PV.append(PV2p[-1] + PV2d[-1] + pV0-Kp*MV0)'
     '''
 
-def IMC():
-    #TODO: Implement
-    pass
+def IMC(Kp, T1, T2, theta, gamma, order="FOPDT"):
+
+    """
+    :Kp: process gain
+    :T1: First time constant [s]
+    :T2: Second time constant [s] (Useful only if order="SOPDT")
+    :theta: delay [s]
+    :gamma: Regulator agressivity (]0-1[, the smaller the more aggressive)
+    :order: order of the model (optional: default value is 'FOPDT')
+        FOPDT: First Order Plus Dead Time
+        SOPDT: Second Order Plus Dead Time
+
+    :return: IMC parameters (Kc, Ti, Td)
+    """
+    Tc = gamma*T1
+    if(order=="FOPDT"):
+        Kc = ((T1+(theta/2))/(Tc+(theta/2)))/Kp
+        Ti = T1+(theta/2)
+        Td = (T1*theta)/(2*T1+theta)
+    elif(order=="SOPDT"):
+        Kc = ((T1+T2)/(Tc+theta))/Kp
+        Ti = T1+T2
+        Td = (T1*T2)/(T1+T2)
+    else:
+        Kc = ((T1+(theta/2))/(Tc+(theta/2)))/Kp
+        Ti = T1+(theta/2)
+        Td = (T1*theta)/(2*T1+theta)
+    return Kc, Ti, Td
