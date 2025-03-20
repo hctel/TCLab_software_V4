@@ -133,7 +133,8 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
     # Derivative action # à vérifier
     Tfd = alpha*Td
     if len(MVD) == 0:
-        MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2])) # problem E[-2] n'existe pas
+        #MVD.append(((Kc*Td)/(Tfd+Ts))*(E[-1]-E[-2])) # problem E[-2] n'existe pas
+        MVD.append(((Kc*Td)/(Tfd+Ts))*E[-1]) # solution est de simplement supprimer E[-2]
     else:
         if method == 'TRAP':
             MVD.append(((Tfd-Ts*0.5)/(Tfd+Ts*0.5))*MVD[-1] + ((Kc*Td)/(Tfd+Ts*0.5))*(E[-1]-E[-2]))
@@ -147,10 +148,18 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
         else:
             MVI[-1] = MVMan[-1] - MVP[-1] - MVD[-1] - MVFF[-1]
 
+    if (MVP[-1] + MVI[-1]) > MVMax:
+        MVI[-1] = MVMax - MVP[-1]
+    if (MVP[-1] + MVI[-1]) < MVMin:
+        MVI[-1] = MVMin - MVP[-1]
+
     MV.append(MVP[-1] + MVI[-1] + MVD[-1] + MVFF[-1])
     
     # Saturation # à vérifier (peut-etre pas nécessaire)
-    MV[-1] = max(MVMin, min(MVMax, MV[-1]))
+    #MV[-1] = max(MVMin, min(MVMax, MV[-1]))
+    
+
+    return (MV, MVP, MVI, MVD)
 
     '''
     # Input-output dynamics P(s)
