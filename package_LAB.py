@@ -219,19 +219,30 @@ def margins(P, C, omega):
     s = 1j*omega
 
     def find_nearest(array, value): # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-        #peut-etre ajouter abs() quelque part pour correspondre à la slide 69
         array = np.asarray(array)
         index = (np.abs(array - value)).argmin()
         result = array[index]
         return result, index
 
-    def P_func(P, s):
-        pass
+    def P_func(P, s): # work with "van der Grinten (SOPDT)" cause it is the best match
+        Ptheta = np.exp(-P.parameters['theta']*s)
+        PGain = P.parameters['Kp']*np.ones_like(Ptheta)
+        PLag1 = 1/(P.parameters['Tlag1']*s + 1)
+        PLag2 = 1/(P.parameters['Tlag2']*s + 1)
+        #PLead1 = P.parameters['Tlead1']*s + 1
+        #PLead2 = P.parameters['Tlead2']*s + 1
+    
+        Ps = np.multiply(Ptheta,PGain)
+        Ps = np.multiply(Ps,PLag1)
+        Ps = np.multiply(Ps,PLag2)
+        #Ps = np.multiply(Ps,PLead1)
+        #Ps = np.multiply(Ps,PLead2)
+        return Ps
 
     def C_func(C, s): # PID -> MV = Kc * ( 1 + 1/(Ti*s) + (Td*s)/(alpha*Td*s + 1) ) * E
         CGain = C.parameters['Kc']
-        CIntegral = 1 / C.parameters['Ti'] * s
-        CDerivative = C.parameters['Td'] * s / (C.parameters['Tfd'] * s + 1)
+        CIntegral = 1 / (C.parameters['Ti'] * s)
+        CDerivative = (C.parameters['Td'] * s) / (C.parameters['alpha'] * C.parameters['Td'] * s + 1)
     
         C_results = np.add(1, CIntegral, CDerivative)
         C_results = np.multiply(CGain, C_results)
@@ -241,9 +252,46 @@ def margins(P, C, omega):
     C_results = C_func(C, s)
     L_results = np.multiply(P_results, C_results)
     
-    omega_c, index = find_nearest(np.absolute(L_results), 1)
-    print(f"omega_c {omega_c} found at index {index}")
+    omega_c, omega_c_index = find_nearest(np.absolute(L_results), 1)
+    omega_c = omega[omega_c_index]
+    print(f"omega_c {omega_c} found at index {omega_c_index}")
 
-    omega_u, index = find_nearest(np.angle(L_results), 1)
-    print(f"omega_u {omega_u} found at index {index}")
-    pass
+    omega_u, omega_u_index = find_nearest(np.angle(L_results, True), -180)
+    omega_u = omega[omega_u_index]
+    print(f"omega_u {omega_u} found at index {omega_u_index}")
+
+    fig, (ax_gain, ax_phase) = plt.subplots(2,1)
+    fig.set_figheight(12)
+    fig.set_figwidth(22)
+    coord_delta = 1.2
+    # Gain part
+    om_u_y = 20*np.log10(np.abs(L_results[omega_u_index]))
+    ax_gain.semilogx(omega,20*np.log10(np.abs(L_results)),label=r'$L(s)$')
+    ax_gain.plot([-10, omega_c, omega_c], [0, 0, -1000], '-bo', label='omega_c')
+    ax_gain.plot([-10, omega_u, omega_u], [om_u_y, om_u_y, -1000], '-go', label='omega_u')
+    ax_gain.text(omega_c*coord_delta, 0, f'({omega_c:.5f}, {0})')
+    ax_gain.text(omega_u*coord_delta, om_u_y, f'({omega_u:.5f}, {om_u_y:.5f})')
+    gain_min = np.min(20*np.log10(np.abs(L_results)/5))
+    gain_max = np.max(20*np.log10(np.abs(L_results)*5))
+    ax_gain.set_xlim([np.min(omega), np.max(omega)])
+    ax_gain.set_ylim([gain_min, gain_max])
+    ax_gain.set_ylabel('Amplitude' + '\n $|L(j\omega)|$ [dB]')
+    ax_gain.set_title('Bode plot of L = P*C')
+    ax_gain.legend(loc='best')
+
+    # Phase part
+    om_c_y = (180/np.pi)*np.angle(L_results[omega_c_index])
+    ax_phase.semilogx(omega, (180/np.pi)*np.unwrap(np.angle(L_results)),label=r'$L(s)$')
+    ax_phase.plot([-10, omega_c, omega_c], [om_c_y, om_c_y, 0], '-bo', label='omega_c')
+    ax_phase.plot([-10, omega_u, omega_u], [-180,-180,0], '-go', label='omega_u')
+    ax_phase.text(omega_c*coord_delta, om_c_y, f'({omega_c:.5f}, {om_c_y:.5f})')
+    ax_phase.text(omega_u*coord_delta, -180, f'({omega_u:.5f}, {-180})')
+    ax_phase.set_xlim([np.min(omega), np.max(omega)])
+    ph_min = np.min((180/np.pi)*np.unwrap(np.angle(L_results))) - 10
+    ph_max = np.max((180/np.pi)*np.unwrap(np.angle(L_results))) + 10
+    ax_phase.set_ylim([np.max([ph_min, -200]), ph_max])
+    ax_phase.set_xlabel(r'Frequency $\omega$ [rad/s]')
+    ax_phase.set_ylabel('Phase' + '\n $\,$'  + r'$\angle L(j\omega)$ [°]')
+    ax_phase.legend(loc='best')
+
+    return
