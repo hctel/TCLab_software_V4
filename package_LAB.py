@@ -28,13 +28,18 @@ def LL_RT(MV,Kp,Tlead,Tlag,Ts,PV,PVInit=0,method='EBD'):
         if len(PV) == 0:
             PV.append(PVInit)
         else: # MV[k+1] is MV[-1] and MV[k] is MV[-2]
-            if method == 'EBD':
-                PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
-            elif method == 'EFD':
-                PV.append((1-K)*PV[-1] + K*Kp*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
-                #TODO: Implement TRAP method
+            if len(MV) == 0:
+                MV.append(0)
+            elif len(MV) == 1:
+                MV.append(0)
             else:
-                PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
+                if method == 'EBD':
+                    PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
+                elif method == 'EFD':
+                    PV.append((1-K)*PV[-1] + K*Kp*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
+                    #TODO: Implement TRAP method
+                else:
+                    PV.append((1/(1+K))*PV[-1] + (K*Kp/(1+K))*((1+Tlead/Tlag)*MV[-1] - Tlead/Tlag*MV[-2]))
     else:
         PV.append(Kp*MV[-1])
 
@@ -162,20 +167,6 @@ def PID_RT(SP, PV, Man, MVMan, MVFF, Kc, Ti, Td, alpha, Ts, MVMin, MVMax, MV, MV
     
 
     return (MV, MVP, MVI, MVD)
-
-    '''
-    # Input-output dynamics P(s)
-    Delay_RT(MV,thetap,Ts,MVDelayp,MV0)
-    FO_RT(MVDelayp,Kp,T1p,Ts,PV1p,0)
-    FO_RT(PV1p,1,T2p,Ts,PV2p,0) 
-
-    # Disturb  ce dynamics D(s)
-    Delay_RT(DV - DV0*np.ones_like(DV),thetad,Ts,MVDelayd,0)
-    FO_RT(MVDelayd,Kd,T1d,Ts,PV1d,0)
-    FO_RT(PV1d,1,T2d,Ts,PV2d,0)
-
-    PV.append(PV2p[-1] + PV2d[-1] + pV0-Kp*MV0)'
-    '''
 
 def IMC(Kp, T1, T2, theta, gamma, order="FOPDT"):
 
