@@ -3,6 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import display, clear_output
 
+CLP_FF = 0
+CLP_NOFF = 1
+OLP_FF = 2
+OLP_NOFF = 3
+
 def LL_RT(MV,Kp,Tlead,Tlag,Ts,PV,PVInit=0,method='EBD'):
     
     """
