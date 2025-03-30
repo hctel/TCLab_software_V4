@@ -7,6 +7,7 @@ CLP_FF = 0
 CLP_NOFF = 1
 OLP_FF = 2
 OLP_NOFF = 3
+CLP_FF_FOLLOW = 4
 
 def LL_RT(MV,Kp,Tlead,Tlag,Ts,PV,PVInit=0,method='EBD'):
     
