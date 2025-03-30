@@ -211,7 +211,18 @@ class Controller:
         self.parameters['Td'] = parameters['Td'] if 'Td' in parameters else 0.0
         self.parameters['alpha'] = parameters['alpha'] if 'alpha' in parameters else 0.2
 
+
+
 def margins(P, C, omega):
+
+    """
+    :P: Process object (e.g. SOPDT, FOPDT, etc.)
+    :C: Controller object (e.g. PID, etc.)
+    :omega: Frequency vector (e.g. np.logspace(-2, 2, 1000))
+
+    :return: None. Opens a matplotlib figure with the Bode plot of the open loop transfer function L(s) = P(s)*C(s).
+    """
+
     s = 1j*omega
 
     def find_nearest(array, value): # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
